@@ -18,6 +18,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -56,6 +57,17 @@ public class Robot extends TimedRobot {
   // Tx value from limelight
   private double tx;
 
+  // Example Gyros
+  public static PigeonIMU gyro;
+  float [] ypr;
+  double  gyroYaw;
+
+  //Using the team2485 deadreckoning class here
+  public static PigeonWrapperRateAndAngle gyroAngleWrapper;
+  private deadReckoning estPos;
+  //dead reckoned position, where it was zeroed to
+  private double deadReckZeroX, deadReckZeroY;
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -70,6 +82,16 @@ public class Robot extends TimedRobot {
     limelight = NetworkTableInstance.getDefault().getTable("limelight");
     camtran = limelight.getEntry("camtran").getDoubleArray(new double[]{});
     tx = limelight.getEntry("tx").getDouble(0.0);
+    //Gyro testing
+    gyro = new PigeonIMU(0);
+    ypr = new float [3];
+    gyro.GetYawPitchRoll(ypr);
+    gyroYaw = ypr[0];
+    //test deadReckoning
+    gyroAngleWrapper = new PigeonWrapperRateAndAngle(gyro, PIDSourceType.kDisplacement, Units.RADS);
+    estPos = new deadReckoning(gyroAngleWrapper, /*left drive train*/, /*right drive train*/);
+    deadReckZeroX=deadReckZeroY = 0;
+
     //test value for rAngle
     rAngle = 0;
   }
@@ -110,6 +132,21 @@ public class Robot extends TimedRobot {
       if (currRotDeg > 180) currRotDeg -= 360; //one half rotation if more than 180
       currentRotation = new Rotation2d(currRotDeg * Math.PI / 180.0);
 
+      currentLocation = new Pose2d(currX, currY, currentRotation);
+
+      // Pigeon IMU
+      gyro.SetYaw(currRotDeg);
+      //zero the deadreckoning
+      estPos.zero;
+      deadReckZeroX = currX;
+      deadReckZeroY = currY;
+
+    }else{
+      //gyro and dead reckoning
+      currentRotation = new Rotation2d(gyroYaw * Math.PI / 180.0);
+      //I do not know what units the deadreckoning gives you
+      currX = estPos.getX + deadReckZeroX;
+      currY = estPos.getX + deadReckZeroX;
       currentLocation = new Pose2d(currX, currY, currentRotation);
     }
     SmartDashboard.putNumber("RobotX", currX);
