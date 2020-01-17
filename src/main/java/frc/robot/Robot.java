@@ -9,12 +9,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 
-import edu.wpi.first.networktables.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 
 /**
@@ -43,10 +45,13 @@ public class Robot extends TimedRobot {
   private double[] camtran;
   private double calcX, calcY;
 
+  //limelight other values
+  private NetworkTable limelight;
+
   //Angle difference from the robots heading and the turrets heading, negative if it turned left and positive if it turned right, can be >360 and <-360
   private double rAngle;
   //Robots current heading/rotation in relation to the field in Degrees and Radians
-  private double currRotRad, currRotDeg;
+  private double currRotDeg;
 
   // Tx value from limelight
   private double tx;
@@ -62,7 +67,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     currentRotation = new Rotation2d(-Math.PI / 2);
     currentLocation = new Pose2d(154.875/*Inches*/, 0, currentRotation);
-    camtran = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran").getDoubleArray(new double[]{});
+    limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    camtran = limelight.getEntry("camtran").getDoubleArray(new double[]{});
+    tx = limelight.getEntry("tx").getDouble(0.0);
+    //test value for rAngle
+    rAngle = 0;
   }
 
   /**
@@ -75,22 +84,22 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    if (NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx").getBoolean(false)) {
-      camtran = NetworkTableInstance.getDefault().getTable("limelight").getEntry("camtran").getDoubleArray(new double[]{});
+    if (limelight.getEntry("tv").getDouble(0) == 1) {
+      camtran = limelight.getEntry("camtran").getDoubleArray(new double[]{});
       camtranAngle = camtran[4];
       distanceFromPP = camtran[0];
       //find the placement of the robot on the field by using the angle given by camtran and the distance from the target
       calcX = distanceFromPP * Math.cos(camtranAngle);
       calcY = distanceFromPP * Math.sin(camtranAngle);
-      currRotDeg = 90+ camtranAngle /*Yaw*/ - rAngle - tx;
-      //Stephen: the best loser
-      if (currRotDeg+rAngle+tx <= 0) {
+      currRotDeg = 90 + camtranAngle /*Yaw*/ - rAngle - tx;
+      //Stephen
+      if (currRotDeg + rAngle + tx <= 0) {
         currY = OPP + calcY;
         currX = calcX;
-        currRotDeg+=180;
+        currRotDeg += 180;
       } else {
         currY = lenY - OPP - calcY;
-        currX = lenX-calcX;
+        currX = lenX - calcX;
       }
 
       //Find the Rotation of the robot in relation to the field
@@ -103,6 +112,8 @@ public class Robot extends TimedRobot {
 
       currentLocation = new Pose2d(currX, currY, currentRotation);
     }
+    SmartDashboard.putNumber("RobotX", currX);
+    SmartDashboard.putNumber("RobotY", currY);
   }
 
   /**
