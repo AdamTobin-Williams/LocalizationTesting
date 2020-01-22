@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
   private double currX, currY;
   private double camtranAngle;
   //PowerPort
+
   private double distanceFromPP;
   //Origin to Power Port
   private final double OPP = 252; //inches, probably wrong
@@ -151,6 +152,7 @@ public class Robot extends TimedRobot {
     }
     SmartDashboard.putNumber("RobotX", currX);
     SmartDashboard.putNumber("RobotY", currY);
+    SmartDashboard.putNumber("Limelighttx", tx);
   }
 
   /**
