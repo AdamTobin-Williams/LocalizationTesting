@@ -2,7 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4512cc79-943c-4de2-8ca6-69e7ae1add6e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/classAnalysis.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/javaCompile/javaCompile.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/frc/robot/Robot.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/frc/robot/Robot.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/LocalizationTesting.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/LocalizationTesting.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/frc/robot/Robot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/frc/robot/Robot.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -44,6 +55,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="LocalizationTesting" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="embeddedtools" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="LocalizationTesting" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="gradlerio" type="c8890929:TasksNode$1" />
               </path>
               <path>
@@ -70,22 +87,15 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../test-board/build.gradle" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/java/frc/robot" />
     <property name="show.unlinked.gradle.project.popup" value="true" />
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\frc24\Documents\frc-workspace\LocalizationTesting\src\main\java\frc\robot" />
+    </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Gradle.LocalizationTesting [deploy]">
     <configuration name="LocalizationTesting [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -98,6 +108,25 @@
         <option name="taskNames">
           <list>
             <option value="build" />
+          </list>
+        </option>
+        <option name="vmOptions" value="" />
+      </ExternalSystemSettings>
+      <GradleScriptDebugEnabled>true</GradleScriptDebugEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="LocalizationTesting [deploy]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="deploy" />
           </list>
         </option>
         <option name="vmOptions" value="" />
@@ -124,6 +153,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.LocalizationTesting [deploy]" />
         <item itemvalue="Gradle.LocalizationTesting [build]" />
       </list>
     </recent_temporary>
@@ -159,26 +189,26 @@
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="252" y="72" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1536.824@0.0.1536.824" timestamp="1579319381037" />
-    <state x="577" y="172" key="FileChooserDialogImpl" timestamp="1579319766687">
+    <state x="577" y="172" key="FileChooserDialogImpl" timestamp="1579583114776">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state x="577" y="172" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1579319766687" />
-    <state width="1220" height="174" key="GridCell.Tab.0.bottom" timestamp="1579320469559">
+    <state x="577" y="172" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1579583114776" />
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1579669871067">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1220" height="174" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1579320469559" />
-    <state width="1220" height="174" key="GridCell.Tab.0.center" timestamp="1579320469559">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1579669871067" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1579669871067">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1220" height="174" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1579320469559" />
-    <state width="1220" height="174" key="GridCell.Tab.0.left" timestamp="1579320469559">
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1579669871067" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1579669871066">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1220" height="174" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1579320469559" />
-    <state width="1220" height="174" key="GridCell.Tab.0.right" timestamp="1579320469559">
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1579669871066" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1579669871067">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1220" height="174" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1579320469559" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1579669871067" />
     <state x="493" y="242" key="com.intellij.ide.util.TipDialog" timestamp="1579320592651">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
