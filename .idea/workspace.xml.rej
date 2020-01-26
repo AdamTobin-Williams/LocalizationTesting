@@ -1,0 +1,9 @@
+diff a/.idea/workspace.xml b/.idea/workspace.xml	(rejected hunks)
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ChangeListManager">
+-      <change beforePath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/6.0.1/executionHistory/executionHistory.lock" afterDir="false" />
+     <list default="true" id="4512cc79-943c-4de2-8ca6-69e7ae1add6e" name="Default Changelist" comment="" />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />

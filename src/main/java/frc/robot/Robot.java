@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import edu.wpi.first.wpilibj.geometry.Pose2d;
@@ -17,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+
+import javax.swing.plaf.IconUIResource;
 
 //import com.ctre.phoenix.sensors.PigeonIMU;
 
@@ -35,39 +38,37 @@ public class Robot extends TimedRobot {
 
   private Pose2d currentLocation;
   private Rotation2d currentRotation;
-  private double currX, currY;
-  private double camtranAngle;
-  //PowerPort
 
-  private double distanceFromPP;
+  //using to calculate distance from pp
+  private final double a1 = 0; //Angle of the camera to the ground
+  private double a2;
+  private final double deltaHeight = 0; //Limelight to the target
+  private double visionDistance; // from the limelight to the base of the target
+
+
   //Origin to Power Port
-  private final double OPP = 252; //inches, probably wrong
-  private final double lenX = 629.25; //inches
-  private final double lenY = 323.25; //inches
-  private double[] camtran;
+  private final double OPP = 252*0.0254; //inches, probably wrong
+  private final double lenX = 629.25*0.0254; //inches
+  private final double lenY = 323.25*0.0254; //inches
   private double calcX, calcY;
+
+  //odometry
+  private DifferentialDriveOdometry moOdometry;
+  private double leftEncoderDistance;
+  private double rightEncoderDistance;
 
   //limelight other values
   private NetworkTable limelight;
+  private double tx;
 
+  //angles of the robot and turret to the field
+  private double robotHeading;
+  private double turretHeading;
+  private final double ppY = OPP;
   //Angle difference from the robots heading and the turrets heading, negative if it turned left and positive if it turned right, can be >360 and <-360
   private double rAngle;
   //Robots current heading/rotation in relation to the field in Degrees and Radians
   private double currRotDeg;
-
-  // Tx value from limelight
-  private double tx;
-
-//  // Example Gyros
-//  public static PigeonIMU gyro;
-//  float [] ypr;
-//  double  gyroYaw;
-//
-//  //Using the team2485 deadreckoning class here
-//  public static PigeonWrapperRateAndAngle gyroAngleWrapper;
-//  private deadReckoning estPos;
-//  //dead reckoned position, where it was zeroed to
-//  private double deadReckZeroX, deadReckZeroY;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -81,20 +82,21 @@ public class Robot extends TimedRobot {
     currentRotation = new Rotation2d(-Math.PI / 2);
     currentLocation = new Pose2d(154.875/*Inches*/, 0, currentRotation);
     limelight = NetworkTableInstance.getDefault().getTable("limelight");
-    camtran = limelight.getEntry("camtran").getDoubleArray(new double[]{});
-    tx = limelight.getEntry("tx").getDouble(0.0);
-//    //Gyro testing
-//    gyro = new PigeonIMU(0);
-//    ypr = new float [3];
-//    gyro.GetYawPitchRoll(ypr);
-//    gyroYaw = ypr[0];
-//    //test deadReckoning
-//    gyroAngleWrapper = new PigeonWrapperRateAndAngle(gyro, PIDSourceType.kDisplacement, Units.RADS);
-//    estPos = new deadReckoning(gyroAngleWrapper, /*left drive train*/, /*right drive train*/);
-//    deadReckZeroX=deadReckZeroY = 0;
 
-    //test value for rAngle
+
+    //random values
+    a2 = 0;
+    visionDistance=0;
     rAngle = 0;
+    robotHeading = 0;
+    turretHeading = 0;
+    tx = 0;
+    leftEncoderDistance = 0;
+    rightEncoderDistance = 0;
+
+    currentRotation = new Rotation2d(robotHeading); // making it the robotheading
+    //Making robot odometry
+    moOdometry = new DifferentialDriveOdometry(currentRotation,currentLocation);
   }
 
   /**
@@ -107,52 +109,37 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+
+    robotHeading = 0; //set as a gyro value;
+    currentRotation = new Rotation2d(robotHeading); // making it the robotheading
+
     if (limelight.getEntry("tv").getDouble(0) == 1) {
-      camtran = limelight.getEntry("camtran").getDoubleArray(new double[]{});
-      camtranAngle = camtran[4];
-      distanceFromPP = camtran[0];
-      //find the placement of the robot on the field by using the angle given by camtran and the distance from the target
-      calcX = distanceFromPP * Math.cos(camtranAngle);
-      calcY = distanceFromPP * Math.sin(camtranAngle);
-      currRotDeg = 90 + camtranAngle /*Yaw*/ - rAngle - tx;
-      //Stephen
-      if (currRotDeg + rAngle + tx <= 0) {
-        currY = OPP + calcY;
-        currX = calcX;
-        currRotDeg += 180;
+
+      tx = limelight.getEntry("tx").getDouble(0);
+      visionDistance = deltaHeight/(Math.tan(a1+a2));
+      turretHeading = robotHeading + rAngle;
+      turretHeading %= 2*Math.PI;//one rotation
+
+      if(turretHeading<Math.PI) {
+        calcX = visionDistance*Math.sin(turretHeading);
+        calcY = ppY-visionDistance*Math.cos(turretHeading);
       } else {
-        currY = lenY - OPP - calcY;
-        currX = lenX - calcX;
+        calcX = lenX-visionDistance*Math.sin(turretHeading);
+        calcY = lenY-ppY+visionDistance*Math.cos(turretHeading-Math.PI);
       }
 
-      //Find the Rotation of the robot in relation to the field
-      //Reduce the rotation to within one half rotation
+      currentLocation = new Pose2d(calcX,calcY,currentRotation);
 
-      //Do Current Rotation logic
-      currRotDeg %= 360;//one rotation
-      if (currRotDeg > 180) currRotDeg -= 360; //one half rotation if more than 180
-      currentRotation = new Rotation2d(currRotDeg * Math.PI / 180.0);
-
-      currentLocation = new Pose2d(currX, currY, currentRotation);
-
-//      // Pigeon IMU
-//      gyro.SetYaw(currRotDeg);
-//      //zero the deadreckoning
-//      estPos.zero;
-//      deadReckZeroX = currX;
-//      deadReckZeroY = currY;
+      //reset odometry with the new data
 
     }else{
-//      //gyro and dead reckoning
-//      currentRotation = new Rotation2d(gyroYaw * Math.PI / 180.0);
-//      //I do not know what units the deadreckoning gives you
-//      currX = estPos.getX + deadReckZeroX;
-//      currY = estPos.getX + deadReckZeroX;
-//      currentLocation = new Pose2d(currX, currY, currentRotation);
+      currentLocation = moOdometry.update(currentRotation,leftEncoderDistance,rightEncoderDistance);
+
     }
-    SmartDashboard.putNumber("RobotX", currX);
-    SmartDashboard.putNumber("RobotY", currY);
-    SmartDashboard.putNumber("Limelighttx", tx);
+
+    SmartDashboard.putNumber("Vision Distance", visionDistance);
+//    SmartDashboard.putNumber("RobotX", calcX);
+//    SmartDashboard.putNumber("RobotY", calcY);
   }
 
   /**
