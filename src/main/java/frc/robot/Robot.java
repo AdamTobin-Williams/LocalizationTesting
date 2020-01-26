@@ -40,16 +40,16 @@ public class Robot extends TimedRobot {
   private Rotation2d currentRotation;
 
   //using to calculate distance from pp
-  private final double a1 = 0; //Angle of the camera to the ground
+  private final double a1 = 15.5*Math.PI/180; //Angle of the camera to the ground
   private double a2;
-  private final double deltaHeight = 0; //Limelight to the target
+  private final double deltaHeight = 80; //Limelight to the target
   private double visionDistance; // from the limelight to the base of the target
 
 
   //Origin to Power Port
-  private final double OPP = 252*0.0254; //inches, probably wrong
-  private final double lenX = 629.25*0.0254; //inches
-  private final double lenY = 323.25*0.0254; //inches
+  private final double OPP = 2743.0/12; //inches, equal to 228 7/12 inches as a mixed fraction
+  private final double lenX = 629.25; //inches
+  private final double lenY = 323.25; //inches
   private double calcX, calcY;
 
   //odometry
@@ -60,6 +60,7 @@ public class Robot extends TimedRobot {
   //limelight other values
   private NetworkTable limelight;
   private double tx;
+  private double ty;
 
   //angles of the robot and turret to the field
   private double robotHeading;
@@ -75,7 +76,39 @@ public class Robot extends TimedRobot {
    * used for any initialization code.
    */
   @Override
-  public void robotInit() {
+  public void testInit() {
+
+  }
+
+  /**
+   * This function is called every robot packet, no matter the mode. Use
+   * this for items like diagnostics that you want ran during disabled,
+   * autonomous, teleoperated and test.
+   *
+   * <p>This runs after the mode specific periodic functions, but before
+   * LiveWindow and SmartDashboard integrated updating.
+   */
+  @Override
+  public void robotPeriodic() {
+
+  }
+
+  /**
+   * This autonomous (along with the chooser code above) shows how to select
+   * between different autonomous modes using the dashboard. The sendable
+   * chooser code works with the Java SmartDashboard. If you prefer the
+   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
+   * getString line to get the auto name from the text box below the Gyro
+   *
+   * <p>You can add additional auto modes by adding additional comparisons to
+   * the switch structure below with additional strings. If using the
+   * SendableChooser make sure to add them to the chooser code above as well.
+   */
+  @Override
+  public void autonomousInit() {
+    m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    System.out.println("Auto selected: " + m_autoSelected);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -85,7 +118,8 @@ public class Robot extends TimedRobot {
 
 
     //random values
-    a2 = 0;
+    ty = 0;
+    a2 = ty;
     visionDistance=0;
     rAngle = 0;
     robotHeading = 0;
@@ -100,15 +134,10 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * This function is called periodically during autonomous.
    */
   @Override
-  public void robotPeriodic() {
+  public void autonomousPeriodic() {
 
     robotHeading = 0; //set as a gyro value;
     currentRotation = new Rotation2d(robotHeading); // making it the robotheading
@@ -116,6 +145,7 @@ public class Robot extends TimedRobot {
     if (limelight.getEntry("tv").getDouble(0) == 1) {
 
       tx = limelight.getEntry("tx").getDouble(0);
+      ty = limelight.getEntry("ty").getDouble(0);
       visionDistance = deltaHeight/(Math.tan(a1+a2));
       turretHeading = robotHeading + rAngle;
       turretHeading %= 2*Math.PI;//one rotation
@@ -143,45 +173,11 @@ public class Robot extends TimedRobot {
   }
 
   /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
-   */
-  @Override
-  public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
-  }
-
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
-  public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
-  }
-
-  /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
-  }
+    }
 
   /**
    * This function is called periodically during test mode.
