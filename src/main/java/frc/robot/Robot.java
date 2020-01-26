@@ -121,11 +121,11 @@ public class Robot extends TimedRobot {
       turretHeading %= 2*Math.PI;//one rotation
 
       if(turretHeading<Math.PI) {
-        calcX = visionDistance*Math.sin(turretHeading);
-        calcY = ppY-visionDistance*Math.cos(turretHeading);
+        calcX = visionDistance*Math.sin(turretHeading+tx);
+        calcY = ppY-visionDistance*Math.cos(turretHeading+tx);
       } else {
-        calcX = lenX-visionDistance*Math.sin(turretHeading);
-        calcY = lenY-ppY+visionDistance*Math.cos(turretHeading-Math.PI);
+        calcX = lenX-visionDistance*Math.sin(turretHeading-Math.PI+tx);
+        calcY = lenY-ppY+visionDistance*Math.cos(turretHeading-Math.PI+tx);
       }
 
       currentLocation = new Pose2d(calcX,calcY,currentRotation);
