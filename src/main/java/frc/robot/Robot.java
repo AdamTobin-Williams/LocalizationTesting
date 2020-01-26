@@ -47,9 +47,9 @@ public class Robot extends TimedRobot {
 
 
   //Origin to Power Port
-  private final double OPP = 252; //inches, probably wrong
-  private final double lenX = 629.25; //inches
-  private final double lenY = 323.25; //inches
+  private final double OPP = 252*0.0254; //inches, probably wrong
+  private final double lenX = 629.25*0.0254; //inches
+  private final double lenY = 323.25*0.0254; //inches
   private double calcX, calcY;
 
   //odometry
@@ -137,9 +137,9 @@ public class Robot extends TimedRobot {
 
     }
 
-
-    SmartDashboard.putNumber("RobotX", calcX);
-    SmartDashboard.putNumber("RobotY", calcY);
+    SmartDashboard.putNumber("Vision Distance", visionDistance);
+//    SmartDashboard.putNumber("RobotX", calcX);
+//    SmartDashboard.putNumber("RobotY", calcY);
   }
 
   /**
