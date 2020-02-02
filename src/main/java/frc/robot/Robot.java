@@ -40,14 +40,14 @@ public class Robot extends TimedRobot {
   private Rotation2d currentRotation;
 
   //using to calculate distance from pp
-  private final double a1 = 15.5*Math.PI/180; //Angle of the camera to the ground
+  private final double a1 = 15.5*Math.PI/180; //Angle of the camera to the ground in 1 of our tests(not on actual robot)
   private double a2;
   private final double deltaHeight = 80; //Limelight to the target
   private double visionDistance; // from the limelight to the base of the target
 
 
   //Origin to Power Port
-  private final double OPP = 2743.0/12; //inches, equal to 228 7/12 inches as a mixed fraction
+  private final double OPP = 2743.0/12; //inches, equal to 228 7/12 inches
   private final double lenX = 629.25; //inches
   private final double lenY = 323.25; //inches
   private double calcX, calcY;
