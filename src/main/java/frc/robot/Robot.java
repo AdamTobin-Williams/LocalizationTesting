@@ -1,111 +1,122 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2017-2019 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot;
+package frc.team2485.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.team2485.WarlordsLib.robotConfigs.RobotConfigs;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
+private static final String kDefaultAuto = "Default";
+private static final String kCustomAuto = "My Auto";
+private String m_autoSelected;
+private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+private Pose2d currentLocation;
+private Rotation2d currentRotation;
 
-import javax.swing.plaf.IconUIResource;
+//using to calculate distance from pp
+private final double a1 = 15.5*Math.PI/180; //Angle of the camera to the ground in 1 of our tests(not on actual robot)
+private double a2;
+private final double deltaHeight = 80; //Limelight to the target
+private double visionDistance; // from the limelight to the base of the target
 
-//import com.ctre.phoenix.sensors.PigeonIMU;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the TimedRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the build.gradle file in the
- * project.
- */
+//Origin to Power Port
+private final double OPP = 2743.0/12; //inches, equal to 228 7/12 inches
+private final double lenX = 629.25; //inches
+private final double lenY = 323.25; //inches
+private double calcX, calcY;
+
+//odometry
+private DifferentialDriveOdometry moOdometry;
+private double leftEncoderDistance;
+private double rightEncoderDistance;
+
+//limelight other values
+private NetworkTable limelight;
+private double tx;
+private double ty;
+
+//angles of the robot and turret to the field
+private double robotHeading;
+private double turretHeading;
+private final double ppY = OPP;
+//Angle difference from the robots heading and the turrets heading, negative if it turned left and positive if it turned right, can be >360 and <-360
+private double rAngle;
+//Robots current heading/rotation in relation to the field in Degrees and Radians
+private double currRotDeg;
+
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private Command m_autonomousCommand;
 
-  private Pose2d currentLocation;
-  private Rotation2d currentRotation;
+  private RobotContainer m_robotContainer;
 
-  //using to calculate distance from pp
-  private final double a1 = 15.5*Math.PI/180; //Angle of the camera to the ground in 1 of our tests(not on actual robot)
-  private double a2;
-  private final double deltaHeight = 80; //Limelight to the target
-  private double visionDistance; // from the limelight to the base of the target
-
-
-  //Origin to Power Port
-  private final double OPP = 2743.0/12; //inches, equal to 228 7/12 inches
-  private final double lenX = 629.25; //inches
-  private final double lenY = 323.25; //inches
-  private double calcX, calcY;
-
-  //odometry
-  private DifferentialDriveOdometry moOdometry;
-  private double leftEncoderDistance;
-  private double rightEncoderDistance;
-
-  //limelight other values
-  private NetworkTable limelight;
-  private double tx;
-  private double ty;
-
-  //angles of the robot and turret to the field
-  private double robotHeading;
-  private double turretHeading;
-  private final double ppY = OPP;
-  //Angle difference from the robots heading and the turrets heading, negative if it turned left and positive if it turned right, can be >360 and <-360
-  private double rAngle;
-  //Robots current heading/rotation in relation to the field in Degrees and Radians
-  private double currRotDeg;
-
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
   @Override
-  public void testInit() {
-
+  public void robotInit() {
+    RobotConfigs.getInstance().loadConfigsFromFile(Constants.CONFIGS_FILE);
+    m_robotContainer = new RobotContainer();
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {
-
+    CommandScheduler.getInstance().run();
   }
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
-   */
+  @Override
+  public void disabledInit() {
+    RobotConfigs.getInstance().saveConfigsToFile(Constants.CONFIGS_FILE);
+  }
+
+  @Override
+  public void disabledPeriodic() {
+  }
+
   @Override
   public void autonomousInit() {
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.schedule();
+    }
+    localizationInit();
+  }
+
+  @Override
+  public void autonomousPeriodic() {
+    Pose2d pos = localizationPeriodic();
+    SmartDashboard.putNumber("Robot Heading", pos.getRotation().getDegrees);
+    SmartDashboard.putNumber("Robot X", pos.getTranslation().getX());
+    SmartDashboard.putNumber("Robot Y", pos.getTranslation().getY());
+  }
+
+  @Override
+  public void teleopInit() {
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+
+    m_robotContainer.resetAll();
+  }
+
+  @Override
+  public void teleopPeriodic() {
+  }
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
+
+  @Override
+  public void testPeriodic() {
+  }
+  public void localizationInit() {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
@@ -132,12 +143,7 @@ public class Robot extends TimedRobot {
     //Making robot odometry
     moOdometry = new DifferentialDriveOdometry(currentRotation,currentLocation);
   }
-
-  /**
-   * This function is called periodically during autonomous.
-   */
-  @Override
-  public void autonomousPeriodic() {
+  public Pose2d localizationPeriodic() {
 
     robotHeading = 0; //set as a gyro value;
     currentRotation = new Rotation2d(robotHeading); // making it the robotheading
@@ -163,26 +169,11 @@ public class Robot extends TimedRobot {
       //reset odometry with the new data
 
     }else{
-      currentLocation = moOdometry.update(currentRotation,leftEncoderDistance,rightEncoderDistance);
-
+      currentLocation = moOdometry.update(currentRotation,Drivetrain.m_encoderLeft.getPosition(),Drivetrain.m_encoderRight.getPosition());
     }
-
     SmartDashboard.putNumber("Vision Distance", visionDistance);
 //    SmartDashboard.putNumber("RobotX", calcX);
 //    SmartDashboard.putNumber("RobotY", calcY);
-  }
-
-  /**
-   * This function is called periodically during operator control.
-   */
-  @Override
-  public void teleopPeriodic() {
-    }
-
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
+    return currentLocation;
   }
 }
