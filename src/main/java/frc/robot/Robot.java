@@ -112,6 +112,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
     currentRotation = new Rotation2d(-Math.PI / 2);
     currentLocation = new Pose2d(154.875/*Inches*/, 0, currentRotation);
     limelight = NetworkTableInstance.getDefault().getTable("limelight");
@@ -161,7 +162,7 @@ public class Robot extends TimedRobot {
       currentLocation = new Pose2d(calcX,calcY,currentRotation);
 
       //reset odometry with the new data
-
+      moOdometry.resetPosition(currentLocation,currentRotation);
     }else{
       currentLocation = moOdometry.update(currentRotation,leftEncoderDistance,rightEncoderDistance);
 
